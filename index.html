@@ -5,8 +5,14 @@
     <!-- Include the Google Font URL for "DM Sans" -->
     <link href="https://fonts.googleapis.com/css?family=DM+Sans" rel="stylesheet">
     <style>
+        :root {
+            --primary-color: #7819A4; /* Default primary color */
+            --background-color: #9C55D0; /* Default background color */
+            --text-color: #fff; /* Default text color */
+        }
+
         body {
-            background-color: #36393f; /* Discord-style gray background */
+            background-color: var(--background-color);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -14,132 +20,150 @@
             height: 100vh;
             margin: 0;
             padding: 20px;
-            font-family: 'DM Sans', sans-serif; /* Use the Google Font here */
+            font-family: 'DM Sans', sans-serif;
+            color: var(--text-color);
         }
 
         h1 {
-            font-size: 80px;
-            color: #fff;
+            font-size: 24px;
         }
 
         .button-container {
+            align-items: center;
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            grid-template-rows: repeat(6, 1fr);
             gap: 10px;
         }
 
         button {
-            background-color: #7289da; /* Discord-style button color */
-            color: #fff;
-            font-size: 18px; /* Slightly larger buttons */
-            padding: 10px 20px;
-            margin: 5px 0;
+            background-color: var(--primary-color);
+            color: var(--text-color);
+            font-size: 18px;
+            padding: 8px 20px; /* Adjusted padding */
+            margin: 5px;
             border: none;
             cursor: pointer;
             border-radius: 4px;
             outline: none;
-            width: 100%; /* Make buttons span the full width of their column */
+            width: 100%;
+            transition: background-color 0.2s, transform 0.2s, border 0.2s;
         }
 
-        button:hover {
-            background-color: #677bc4; /* Button color on hover */
+        .button-container button:hover {
+            background-color: lightenColor(var(--primary-color), 20%);
+            border: 2px solid var(--primary-color);
+            transform: scale(1.03);
         }
 
-        button:active {
-            transform: scale(0.95); /* Reactive animation on button press */
+        .button-container button:active {
+            transform: scale(0.97);
         }
 
         #stop-button {
-            grid-column: span 4; /* Make the "Stop All Sounds" button span all columns */
+            align-items: center;
+            grid-column: span 4;
         }
 
         #now-playing {
-            grid-column: span 4; /* Make the "Now Playing" area span all columns */
-            color: #fff;
+            grid-column: span 4;
             text-align: center;
         }
 
         #progress-container {
-            grid-column: span 4; /* Make the progress bar span all columns */
-            width: 80%; /* Wider progress bar container */
+            grid-column: span 4;
+            width: 80%;
             height: 10px;
             background-color: #ccc;
-            border-radius: 5px; /* Rounded edges */
-            margin: 20px auto; /* Centered progress bar */
+            border-radius: 5px;
+            margin: 20px auto;
             position: relative;
         }
 
         #progress-bar {
             width: 0;
             height: 100%;
-            background-color: #7289da;
-            border-radius: 5px; /* Rounded edges */
+            background-color: var(--primary-color);
+            border-radius: 5px;
         }
 
         #countdown {
-            color: #fff;
             text-align: center;
+            padding: 8px 20px;
         }
 
-        #play-pause-buttons {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-top: 10px;
-        }
-
-        #play-button, #pause-button {
-            background-color: #7289da;
-            color: #fff;
-            font-size: 16px;
-            padding: 8px 16px;
-            margin: 0 10px;
+        #toggle-play-pause {
+            align: left;
+            background-color: var(--primary-color);
+            color: var(--text-color);
+            font-size: 18px;
+            padding: 8px 20px; /* Adjusted padding */
             border: none;
             border-radius: 4px;
             cursor: pointer;
+            width: 40%;
+            transition: background-color 0.2s, transform 0.2s, border 0.2s;
         }
 
-        #play-button:hover, #pause-button:hover {
-            background-color: #677bc4;
+        #toggle-play-pause:hover {
+            background-color: lightenColor(var(--primary-color), 20%);
+            border: 2px solid var(--primary-color);
+            transform: scale(1.03);
+        }
+
+        .color-picker {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        .color-picker input[type="color"] {
+            margin: 5px 0;
         }
     </style>
 </head>
 <body>
     <h1>Diary of Anne Frank Sound Effects</h1>
 
+    <!-- Color Picker for adjusting primary color -->
+    <div class="color-picker">
+        <label for="primary-color">Primary Color:</label>
+        <input type="color" id="primary-color" value="#7819A4" onchange="changePrimaryColor(this.value)">
+    </div>
+
     <!-- Define an array of sound effect URLs and their names -->
     <script>
         const soundEffects = [
             { url: 'https://dl.dropboxusercontent.com/scl/fi/c28eq0pd4eajcmitlwnae/yt5s.com-Seagulls-Sound-Effects-_-Sound-Pack-128-kbps.mp3?rlkey=53qn19vkqxe90c7wikvva5yl3&dl=0', name: 'Seagulls' },
-            { url: 'https://dl.dropboxusercontent.com/scl/fi/ywqvmixwwap7c6u2njgb8/yt5s.com-Free-Sound-Effect-Heavy-Rain-Sounds-Royalty-free-Sound-Effects-128-kbps.mp3?rlkey=vd1gictengw80b9pnrg9g5lqb&dl=0', name: 'Rain' },
-            { url: 'sound3.mp3', name: 'Sound Effect 3' },
-            { url: 'sound4.mp3', name: 'Sound Effect 4' },
-            { url: 'sound5.mp3', name: 'Sound Effect 5' },
-            { url: 'sound6.mp3', name: 'Sound Effect 6' },
-            { url: 'sound7.mp3', name: 'Sound Effect 7' },
-            { url: 'sound8.mp3', name: 'Sound Effect 8' },
-            { url: 'sound9.mp3', name: 'Sound Effect 9' },
-            { url: 'sound10.mp3', name: 'Sound Effect 10' },
-            { url: 'sound11.mp3', name: 'Sound Effect 11' },
-            { url: 'sound12.mp3', name: 'Sound Effect 12' },
-            { url: 'sound13.mp3', name: 'Sound Effect 13' },
-            { url: 'sound14.mp3', name: 'Sound Effect 14' },
-            { url: 'sound15.mp3', name: 'Sound Effect 15' },
-            { url: 'sound16.mp3', name: 'Sound Effect 16' },
-            { url: 'sound17.mp3', name: 'Sound Effect 17' },
-            { url: 'sound18.mp3', name: 'Sound Effect 18' },
-            { url: 'sound19.mp3', name: 'Sound Effect 19' },
-            { url: 'sound20.mp3', name: 'Sound Effect 20' },
-            { url: 'sound21.mp3', name: 'Sound Effect 21' },
-            { url: 'sound22.mp3', name: 'Sound Effect 22' },
-            { url: 'sound23.mp3', name: 'Sound Effect 23' },
-            { url: 'sound24.mp3', name: 'Sound Effect 24' }
-            // Add more sound effects here
+            { url: 'url2.mp3', name: 'Sound Effect 2' },
+            { url: 'url3.mp3', name: 'Sound Effect 3' },
+            { url: 'url4.mp3', name: 'Sound Effect 4' },
+            { url: 'url5.mp3', name: 'Sound Effect 5' },
+            { url: 'url6.mp3', name: 'Sound Effect 6' },
+            { url: 'url7.mp3', name: 'Sound Effect 7' },
+            { url: 'url8.mp3', name: 'Sound Effect 8' },
+            { url: 'url9.mp3', name: 'Sound Effect 9' },
+            { url: 'url10.mp3', name: 'Sound Effect 10' },
+            { url: 'url11.mp3', name: 'Sound Effect 11' },
+            { url: 'url12.mp3', name: 'Sound Effect 12' },
+            { url: 'url13.mp3', name: 'Sound Effect 13' },
+            { url: 'url14.mp3', name: 'Sound Effect 14' },
+            { url: 'url15.mp3', name: 'Sound Effect 15' },
+            { url: 'url16.mp3', name: 'Sound Effect 16' },
+            { url: 'url17.mp3', name: 'Sound Effect 17' },
+            { url: 'url18.mp3', name: 'Sound Effect 18' },
+            { url: 'url19.mp3', name: 'Sound Effect 19' },
+            { url: 'url20.mp3', name: 'Sound Effect 20' },
+            { url: 'url21.mp3', name: 'Sound Effect 21' },
+            { url: 'url22.mp3', name: 'Sound Effect 22' },
+            { url: 'url23.mp3', name: 'Sound Effect 23' },
+            { url: 'url24.mp3', name: 'Sound Effect 24' }
         ];
-
-        let currentlyPlaying = null; // To prevent multiple sounds from playing simultaneously
+        // Add more buttons for additional sound effects
+        // Update the above array with all 24 sound effects
+        let currentlyPlaying = null;
         let progressInterval = null;
+        let playMode = true; // true for "Play," false for "Pause"
 
         function playSound(index) {
             if (currentlyPlaying !== null) {
@@ -152,6 +176,7 @@
             startProgress();
             document.getElementById('now-playing').textContent = `Now Playing: ${soundEffects[index].name}`;
             document.getElementById('countdown').textContent = '';
+            updatePlayPauseButton();
         }
 
         function stopAllSounds() {
@@ -162,6 +187,7 @@
                 resetProgress();
                 document.getElementById('now-playing').textContent = 'Now Playing: None';
                 document.getElementById('countdown').textContent = '';
+                updatePlayPauseButton();
             }
         }
 
@@ -172,7 +198,6 @@
                 if (currentlyPlaying.currentTime < currentlyPlaying.duration) {
                     const progress = (currentlyPlaying.currentTime / currentlyPlaying.duration) * 100;
                     progressBar.style.width = progress + '%';
-
                     const timeLeft = formatTime(currentlyPlaying.duration - currentlyPlaying.currentTime);
                     document.getElementById('countdown').textContent = `Time Left: ${timeLeft}`;
                 } else {
@@ -195,58 +220,89 @@
 
         function togglePlayPause() {
             if (currentlyPlaying) {
-                if (currentlyPlaying.paused) {
-                    currentlyPlaying.play();
-                } else {
+                if (playMode) {
                     currentlyPlaying.pause();
+                } else {
+                    currentlyPlaying.play();
                 }
+                playMode = !playMode;
+                updatePlayPauseButton();
             }
+        }
+
+        function changePrimaryColor(color) {
+            document.documentElement.style.setProperty('--primary-color', color);
+            updateBackgroundAndButtonColors();
+        }
+
+        function updateBackgroundAndButtonColors() {
+            const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--primary-color').trim();
+            const colorBrightness = getColorBrightness(primaryColor);
+            const lighterColor = lightenColor(primaryColor, 20);
+            document.documentElement.style.setProperty('--background-color', lighterColor);
+            const textColor = colorBrightness < 128 ? '#fff' : '#000';
+            document.documentElement.style.setProperty('--text-color', textColor);
+        }
+
+        function getColorBrightness(hexColor) {
+            const r = parseInt(hexColor.slice(1, 3), 16);
+            const g = parseInt(hexColor.slice(3, 5), 16);
+            const b = parseInt(hexColor.slice(5, 7), 16);
+            return (r * 299 + g * 587 + b * 114) / 1000;
+        }
+
+        function updatePlayPauseButton() {
+            const button = document.getElementById('toggle-play-pause');
+            button.textContent = playMode ? 'Pause' : 'Play';
+        }
+
+        function lightenColor(color, percent) {
+            const num = parseInt(color.slice(1), 16);
+            const amt = Math.round(2.55 * percent);
+            const R = (num >> 16) + amt;
+            const G = (num >> 8 & 0x00FF) + amt;
+            const B = (num & 0x0000FF) + amt;
+            const newColor = '#' + (0x1000000 + (R < 255 ? (R < 1 ? 0 : R) : 255) * 0x10000 + (G < 255 ? (G < 1 ? 0 : G) : 255) * 0x100 + (B < 255 ? (B < 1 ? 0 : B) : 255)).toString(16).slice(1);
+            return newColor;
         }
     </script>
 
-    <!-- Create a grid of buttons in a 4x6 layout -->
     <div class="button-container">
         <button onclick="playSound(0)">Seagulls</button>
-        <button onclick="playSound(1)">Rain</button>
-        <button onclick="playSound(2)">Sound Effect 3</button>
-        <button onclick="playSound(3)">Sound Effect 4</button>
-        <button onclick="playSound(4)">Sound Effect 5</button>
-        <button onclick="playSound(5)">Sound Effect 6</button>
-        <button onclick="playSound(6)">Sound Effect 7</button>
-        <button onclick="playSound(7)">Sound Effect 8</button>
-        <button onclick="playSound(8)">Sound Effect 9</button>
-        <button onclick="playSound(9)">Sound Effect 10</button>
-        <button onclick="playSound(10)">Sound Effect 11</button>
-        <button onclick="playSound(11)">Sound Effect 12</button>
-        <button onclick="playSound(12)">Sound Effect 13</button>
-        <button onclick="playSound(13)">Sound Effect 14</button>
-        <button onclick="playSound(14)">Sound Effect 15</button>
-        <button onclick="playSound(15)">Sound Effect 16</button>
-        <button onclick="playSound(16)">Sound Effect 17</button>
-        <button onclick="playSound(17)">Sound Effect 18</button>
-        <button onclick="playSound(18)">Sound Effect 19</button>
-        <button onclick="playSound(19)">Sound Effect 20</button>
-        <button onclick="playSound(20)">Sound Effect 21</button>
-        <button onclick="playSound(21)">Sound Effect 22</button>
-        <button onclick="playSound(22)">Sound Effect 23</button>
-        <button onclick="playSound(23)">Sound Effect 24</button>
-        <!-- Add more buttons for additional sound effects -->
+        <button onclick="playSound(1)">Button 2</button>
+        <button onclick="playSound(2)">Button 3</button>
+        <button onclick="playSound(3)">Button 4</button>
+        <button onclick="playSound(4)">Button 5</button>
+        <button onclick="playSound(5)">Button 6</button>
+        <button onclick="playSound(6)">Button 7</button>
+        <button onclick="playSound(7)">Button 8</button>
+        <button onclick="playSound(8)">Button 9</button>
+        <button onclick="playSound(9)">Button 10</button>
+        <button onclick="playSound(10)">Button 11</button>
+        <button onclick="playSound(11)">Button 12</button>
+        <button onclick="playSound(12)">Button 13</button>
+        <button onclick="playSound(13)">Button 14</button>
+        <button onclick="playSound(14)">Button 15</button>
+        <button onclick="playSound(15)">Button 16</button>
+        <button onclick="playSound(16)">Button 17</button>
+        <button onclick="playSound(17)">Button 18</button>
+        <button onclick="playSound(18)">Button 19</button>
+        <button onclick="playSound(19)">Button 20</button>
+        <button onclick="playSound(20)">Button 21</button>
+        <button onclick="playSound(21)">Button 22</button>
+        <button onclick="playSound(22)">Button 23</button>
+        <button onclick="playSound(23)">Button 24</button>
         <button id="stop-button" onclick="stopAllSounds()">Stop All Sounds</button>
     </div>
 
     <div id="now-playing">Now Playing: None</div>
 
-    <!-- Progress bar container -->
     <div id="progress-container">
         <div id="progress-bar"></div>
     </div>
 
     <div id="countdown"></div>
 
-    <!-- Play and Pause buttons -->
-    <div id="play-pause-buttons">
-        <button id="play-button" onclick="togglePlayPause()">Play</button>
-        <button id="pause-button" onclick="togglePlayPause()">Pause</button>
-    </div>
+    <button id="toggle-play-pause" onclick="togglePlayPause()">Play</button>
 </body>
 </html>
