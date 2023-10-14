@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Diary of Anne Frank Sound Effects</title>
+    <!-- Include the Google Font URL for "DM Sans" -->
+    <link href="https://fonts.googleapis.com/css?family=DM+Sans" rel="stylesheet">
+    <style>
+        body {
+            background-color: #36393f; /* Discord-style gray background */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            padding: 20px;
+            font-family: 'DM Sans', sans-serif; /* Use the Google Font here */
+        }
+
+        h1 {
+            font-size: 80px;
+            color: #fff;
+        }
+
+        .button-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(6, 1fr);
+            gap: 10px;
+        }
+
+        button {
+            background-color: #7289da; /* Discord-style button color */
+            color: #fff;
+            font-size: 18px; /* Slightly larger buttons */
+            padding: 10px 20px;
+            margin: 5px 0;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+            outline: none;
+            width: 100%; /* Make buttons span the full width of their column */
+        }
+
+        button:hover {
+            background-color: #677bc4; /* Button color on hover */
+        }
+
+        button:active {
+            transform: scale(0.95); /* Reactive animation on button press */
+        }
+
+        #stop-button {
+            grid-column: span 4; /* Make the "Stop All Sounds" button span all columns */
+        }
+
+        #now-playing {
+            grid-column: span 4; /* Make the "Now Playing" area span all columns */
+            color: #fff;
+            text-align: center;
+        }
+
+        #progress-container {
+            grid-column: span 4; /* Make the progress bar span all columns */
+            width: 80%; /* Wider progress bar container */
+            height: 10px;
+            background-color: #ccc;
+            border-radius: 5px; /* Rounded edges */
+            margin: 20px auto; /* Centered progress bar */
+            position: relative;
+        }
+
+        #progress-bar {
+            width: 0;
+            height: 100%;
+            background-color: #7289da;
+            border-radius: 5px; /* Rounded edges */
+        }
+
+        #countdown {
+            color: #fff;
+            text-align: center;
+        }
+
+        #play-pause-buttons {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        #play-button, #pause-button {
+            background-color: #7289da;
+            color: #fff;
+            font-size: 16px;
+            padding: 8px 16px;
+            margin: 0 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        #play-button:hover, #pause-button:hover {
+            background-color: #677bc4;
+        }
+    </style>
+</head>
+<body>
+    <h1>Diary of Anne Frank Sound Effects</h1>
+
+    <!-- Define an array of sound effect URLs and their names -->
+    <script>
+        const soundEffects = [
+            { url: 'https://dl.dropboxusercontent.com/scl/fi/c28eq0pd4eajcmitlwnae/yt5s.com-Seagulls-Sound-Effects-_-Sound-Pack-128-kbps.mp3?rlkey=53qn19vkqxe90c7wikvva5yl3&dl=0', name: 'Seagulls' },
+            { url: 'https://dl.dropboxusercontent.com/scl/fi/ywqvmixwwap7c6u2njgb8/yt5s.com-Free-Sound-Effect-Heavy-Rain-Sounds-Royalty-free-Sound-Effects-128-kbps.mp3?rlkey=vd1gictengw80b9pnrg9g5lqb&dl=0', name: 'Rain' },
+            { url: 'sound3.mp3', name: 'Sound Effect 3' },
+            { url: 'sound4.mp3', name: 'Sound Effect 4' },
+            { url: 'sound5.mp3', name: 'Sound Effect 5' },
+            { url: 'sound6.mp3', name: 'Sound Effect 6' },
+            { url: 'sound7.mp3', name: 'Sound Effect 7' },
+            { url: 'sound8.mp3', name: 'Sound Effect 8' },
+            { url: 'sound9.mp3', name: 'Sound Effect 9' },
+            { url: 'sound10.mp3', name: 'Sound Effect 10' },
+            { url: 'sound11.mp3', name: 'Sound Effect 11' },
+            { url: 'sound12.mp3', name: 'Sound Effect 12' },
+            { url: 'sound13.mp3', name: 'Sound Effect 13' },
+            { url: 'sound14.mp3', name: 'Sound Effect 14' },
+            { url: 'sound15.mp3', name: 'Sound Effect 15' },
+            { url: 'sound16.mp3', name: 'Sound Effect 16' },
+            { url: 'sound17.mp3', name: 'Sound Effect 17' },
+            { url: 'sound18.mp3', name: 'Sound Effect 18' },
+            { url: 'sound19.mp3', name: 'Sound Effect 19' },
+            { url: 'sound20.mp3', name: 'Sound Effect 20' },
+            { url: 'sound21.mp3', name: 'Sound Effect 21' },
+            { url: 'sound22.mp3', name: 'Sound Effect 22' },
+            { url: 'sound23.mp3', name: 'Sound Effect 23' },
+            { url: 'sound24.mp3', name: 'Sound Effect 24' }
+            // Add more sound effects here
+        ];
+
+        let currentlyPlaying = null; // To prevent multiple sounds from playing simultaneously
+        let progressInterval = null;
+
+        function playSound(index) {
+            if (currentlyPlaying !== null) {
+                currentlyPlaying.pause();
+                clearInterval(progressInterval);
+            }
+            const audio = new Audio(soundEffects[index].url);
+            audio.play();
+            currentlyPlaying = audio;
+            startProgress();
+            document.getElementById('now-playing').textContent = `Now Playing: ${soundEffects[index].name}`;
+            document.getElementById('countdown').textContent = '';
+        }
+
+        function stopAllSounds() {
+            if (currentlyPlaying !== null) {
+                currentlyPlaying.pause();
+                currentlyPlaying = null;
+                clearInterval(progressInterval);
+                resetProgress();
+                document.getElementById('now-playing').textContent = 'Now Playing: None';
+                document.getElementById('countdown').textContent = '';
+            }
+        }
+
+        function startProgress() {
+            const progressBar = document.getElementById('progress-bar');
+            progressBar.style.width = '0%';
+            progressInterval = setInterval(() => {
+                if (currentlyPlaying.currentTime < currentlyPlaying.duration) {
+                    const progress = (currentlyPlaying.currentTime / currentlyPlaying.duration) * 100;
+                    progressBar.style.width = progress + '%';
+
+                    const timeLeft = formatTime(currentlyPlaying.duration - currentlyPlaying.currentTime);
+                    document.getElementById('countdown').textContent = `Time Left: ${timeLeft}`;
+                } else {
+                    resetProgress();
+                }
+            }, 500);
+        }
+
+        function resetProgress() {
+            const progressBar = document.getElementById('progress-bar');
+            progressBar.style.width = '0%';
+            document.getElementById('countdown').textContent = '';
+        }
+
+        function formatTime(timeInSeconds) {
+            const minutes = Math.floor(timeInSeconds / 60);
+            const seconds = Math.floor(timeInSeconds % 60);
+            return `${minutes < 10 ? '0' : ''}${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+        }
+
+        function togglePlayPause() {
+            if (currentlyPlaying) {
+                if (currentlyPlaying.paused) {
+                    currentlyPlaying.play();
+                } else {
+                    currentlyPlaying.pause();
+                }
+            }
+        }
+    </script>
+
+    <!-- Create a grid of buttons in a 4x6 layout -->
+    <div class="button-container">
+        <button onclick="playSound(0)">Seagulls</button>
+        <button onclick="playSound(1)">Rain</button>
+        <button onclick="playSound(2)">Sound Effect 3</button>
+        <button onclick="playSound(3)">Sound Effect 4</button>
+        <button onclick="playSound(4)">Sound Effect 5</button>
+        <button onclick="playSound(5)">Sound Effect 6</button>
+        <button onclick="playSound(6)">Sound Effect 7</button>
+        <button onclick="playSound(7)">Sound Effect 8</button>
+        <button onclick="playSound(8)">Sound Effect 9</button>
+        <button onclick="playSound(9)">Sound Effect 10</button>
+        <button onclick="playSound(10)">Sound Effect 11</button>
+        <button onclick="playSound(11)">Sound Effect 12</button>
+        <button onclick="playSound(12)">Sound Effect 13</button>
+        <button onclick="playSound(13)">Sound Effect 14</button>
+        <button onclick="playSound(14)">Sound Effect 15</button>
+        <button onclick="playSound(15)">Sound Effect 16</button>
+        <button onclick="playSound(16)">Sound Effect 17</button>
+        <button onclick="playSound(17)">Sound Effect 18</button>
+        <button onclick="playSound(18)">Sound Effect 19</button>
+        <button onclick="playSound(19)">Sound Effect 20</button>
+        <button onclick="playSound(20)">Sound Effect 21</button>
+        <button onclick="playSound(21)">Sound Effect 22</button>
+        <button onclick="playSound(22)">Sound Effect 23</button>
+        <button onclick="playSound(23)">Sound Effect 24</button>
+        <!-- Add more buttons for additional sound effects -->
+        <button id="stop-button" onclick="stopAllSounds()">Stop All Sounds</button>
+    </div>
+
+    <div id="now-playing">Now Playing: None</div>
+
+    <!-- Progress bar container -->
+    <div id="progress-container">
+        <div id="progress-bar"></div>
+    </div>
+
+    <div id="countdown"></div>
+
+    <!-- Play and Pause buttons -->
+    <div id="play-pause-buttons">
+        <button id="play-button" onclick="togglePlayPause()">Play</button>
+        <button id="pause-button" onclick="togglePlayPause()">Pause</button>
+    </div>
+</body>
+</html>
